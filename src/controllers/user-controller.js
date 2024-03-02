@@ -6,11 +6,32 @@ const userService = new UserService();
 const create = async (req, res) => {
   try {
     const response = await userService.createUser(req.body);
+    res.cookie('token', response.data, { httpOnly: true });
     return res.status(StatusCodes.CREATED).json({
       data: response,
       success: true,
       error: {},
       message: "Successfully created user",
+    });
+  } catch (error) {
+    return res.status(error.errorCode).json({
+      data: {},
+      success: false,
+      error: error.name,
+      message: error.message,
+    });
+  }
+};
+
+const signin = async (req, res) => {
+  try {
+    const response = await userService.signIn(req.body);
+    res.cookie('token', response.data, { httpOnly: true });
+    return res.status(StatusCodes.OK).json({
+      data: response,
+      success: true,
+      error: {},
+      message: "User is authenticated",
     });
   } catch (error) {
     return res.status(error.errorCode).json({
@@ -79,9 +100,30 @@ const destroy = async (req, res) => {
   }
 };
 
+const authenticate = async (req, res) => {
+  try {
+    const response = await userService.authenticateUser(req.cookies.token);
+    return res.status(StatusCodes.OK).json({
+      data: response,
+      success: true,
+      error: {},
+      message: "User is authenticated",
+    });
+  } catch (error) {
+    return res.status(error.errorCode).json({
+      data: {},
+      success: false,
+      error: error.name,
+      message: error.message,
+    });
+  }
+}
+
 module.exports = {
   create,
   update,
   get,
   destroy,
+  signin,
+  authenticate
 };

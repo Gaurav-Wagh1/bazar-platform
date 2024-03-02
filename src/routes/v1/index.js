@@ -3,9 +3,20 @@ const router = express.Router();
 
 const { UserController } = require("../../controllers/index.js");
 
-const validateUserRequest = require("../../middlewares/user-request-middleware.js");
+const {
+  validateUserRequest,
+  validateAuthenticate
+} = require("../../middlewares/user-request-middleware.js");
 
-router.post("/users", validateUserRequest, UserController.create);
+router.post("/users/signup", validateUserRequest, UserController.create);
+
+router.post(
+  "/users/signin",
+  validateUserRequest,
+  UserController.signin
+);
+
+router.post('/users/authenticate', validateAuthenticate, UserController.authenticate);
 
 router.get("/users/:id", UserController.get);
 

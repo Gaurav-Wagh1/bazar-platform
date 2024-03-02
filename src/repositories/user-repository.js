@@ -45,6 +45,31 @@ class UserRepository {
     }
   }
 
+  async getUserByEmail(userEmail) {
+    try {
+      const user = await User.findOne({
+        where: {
+          email: userEmail,
+        },
+        attributes: { exclude: ["destroyTime"] },
+      });
+      if (!user) {
+        throw new AppError(
+          "No such user exists",
+          StatusCodes.BAD_GATEWAY,
+          "No such user exists, please sign up first!"
+        );
+      }
+      return user;
+    } catch (error) {
+      console.log("Error at repository layer", error);
+      if (error.name === "No such user exists") {
+        throw error;
+      }
+      throw new AppError(error.name);
+    }
+  }
+
   async updateUser(userId, data) {
     try {
       const user = await User.update(data, { where: { id: userId } });
