@@ -30,4 +30,8 @@ router.delete("/users/:id", UserController.destroy);
 
 router.post("/products", ProductController.create);
 
+router.get("/products/:id", ProductController.get);
+
+router.get("/products/", ProductController.getAll);
+
 module.exports = router;

@@ -34,6 +34,26 @@ class ProductService {
             console.log(error);
         }
     }
+
+    async getProduct(productId){
+        try {
+            const  product = await this.productRepository.getProduct(productId);
+            return product;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+
+    async getAllProducts(){
+        try {
+            const  products = await this.productRepository.getAllProducts();
+            return products;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
 }
 
 module.exports = ProductService;

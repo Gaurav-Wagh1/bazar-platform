@@ -51,4 +51,3 @@ sub-category                    =>      laptops
 variety                         =>      16GB RAM, 256GB SSD
 price                           =>      20500
 quantity                        =>      10
-supplierId                      =>      1
