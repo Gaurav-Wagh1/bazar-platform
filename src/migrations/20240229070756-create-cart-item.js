@@ -9,20 +9,6 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      cartId: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: "Carts",
-          key: "id",
-        },
-      },
-      productSkuId: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: "ProductSKUs",
-          key: "id",
-        },
-      },
       quantity: {
         type: Sequelize.INTEGER,
       },

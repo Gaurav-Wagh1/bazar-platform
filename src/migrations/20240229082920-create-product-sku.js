@@ -9,13 +9,6 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      productId: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: "Products",
-          key: "id",
-        },
-      },
       variety: {
         type: Sequelize.STRING,
       },

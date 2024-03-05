@@ -2,8 +2,9 @@ const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 
-const { PORT } = require("./config/server-config");
+const { Product, Supplier } = require("./models")
 
+const { PORT } = require("./config/server-config");
 const apiRoutes = require("./routes/index");
 
 const createServer = async () => {
@@ -17,7 +18,7 @@ const createServer = async () => {
 
   app.listen(PORT, async () => {
     console.log(`Server started at port ${PORT}`);
-    // await Subcategory.sync({alter:true});
+
   });
 };
 

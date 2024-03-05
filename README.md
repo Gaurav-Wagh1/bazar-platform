@@ -39,3 +39,16 @@ productsku
 ###### 5th migration
 cartitem    
 orderitem   
+
+
+
+required fields for products form;
+
+name of product                 =>      X1-Carbon
+description of product          =>      best laptop
+category                        =>      electronics
+sub-category                    =>      laptops
+variety                         =>      16GB RAM, 256GB SSD
+price                           =>      20500
+quantity                        =>      10
+supplierId                      =>      1

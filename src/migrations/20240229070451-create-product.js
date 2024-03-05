@@ -15,20 +15,6 @@ module.exports = {
       description: {
         type: Sequelize.STRING,
       },
-      categoryId: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: "Subcategories",
-          key: "id",
-        },
-      },
-      supplierId: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: "Suppliers",
-          key: "id",
-        },
-      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

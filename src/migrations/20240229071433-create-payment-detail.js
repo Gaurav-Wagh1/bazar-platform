@@ -9,13 +9,6 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      orderId: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: "OrderDetails",
-          key: "id",
-        },
-      },
       amount: {
         type: Sequelize.INTEGER,
       },
