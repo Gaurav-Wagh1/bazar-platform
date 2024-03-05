@@ -110,7 +110,45 @@ const authenticate = async (req, res) => {
       message: "User is authenticated",
     });
   } catch (error) {
-    return res.status(error.errorCode).json({
+    return res.status(error.errorCode || StatusCodes.INTERNAL_SERVER_ERROR).json({
+      data: {},
+      success: false,
+      error: error.name,
+      message: error.message,
+    });
+  }
+}
+
+const forgetPassword = async (req, res) => {
+  try {
+    const response = await userService.forgetPassword(req.body);
+    return res.status(StatusCodes.OK).json({
+      data: response,
+      success: true,
+      error: {},
+      message: "An email with verification code is sent",
+    });
+  } catch (error) {
+    return res.status(error.errorCode || StatusCodes.INTERNAL_SERVER_ERROR).json({
+      data: {},
+      success: false,
+      error: error.name,
+      message: error.message,
+    });
+  }
+}
+
+const updatePassword = async (req, res) => {
+  try {
+    const response = await userService.updatePassword(req.params.id, req.body);
+    return res.status(StatusCodes.OK).json({
+      data: response,
+      success: true,
+      error: {},
+      message: "Password updated successfully",
+    });
+  } catch (error) {
+    return res.status(error.errorCode || StatusCodes.INTERNAL_SERVER_ERROR).json({
       data: {},
       success: false,
       error: error.name,
@@ -125,5 +163,7 @@ module.exports = {
   get,
   destroy,
   signin,
-  authenticate
+  authenticate,
+  forgetPassword,
+  updatePassword
 };

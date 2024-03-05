@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
       this.hasOne(models.Cart);
+      this.hasOne(models.Token);
       this.hasMany(models.OrderDetail);
     }
   }
@@ -29,11 +30,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       password: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          len: [2, 10],
-          isAlphanumeric: true,
-        },
+        allowNull: false
       },
       phoneNumber: {
         type: DataTypes.STRING,
@@ -47,9 +44,6 @@ module.exports = (sequelize, DataTypes) => {
       country: DataTypes.STRING,
       postalCode: {
         type: DataTypes.STRING,
-        validate: {
-          len: [6, 6],
-        },
       },
       fullName: {
         type: DataTypes.VIRTUAL,
@@ -74,6 +68,11 @@ module.exports = (sequelize, DataTypes) => {
     const hashedPassword = await bcrypt.hash(user.password, SALT);
     user.password = hashedPassword;
   });
+
+  User.beforeUpdate(async (user, options) => {
+    const hashedPassword = await bcrypt.hash(user.password, SALT);
+    user.password = hashedPassword;
+  })
 
   return User;
 };

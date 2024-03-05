@@ -50,8 +50,7 @@ class UserRepository {
       const user = await User.findOne({
         where: {
           email: userEmail,
-        },
-        attributes: { exclude: ["destroyTime"] },
+        }
       });
       if (!user) {
         throw new AppError(

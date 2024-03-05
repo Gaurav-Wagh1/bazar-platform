@@ -22,7 +22,7 @@ const create = async (req, res) => {
     }
 }
 
-const get = async(req, res) => {
+const get = async (req, res) => {
     try {
         const response = await productService.getProduct(req.params.id);
         return res.status(StatusCodes.OK).json({
@@ -41,7 +41,7 @@ const get = async(req, res) => {
     }
 }
 
-const getAll = async(req, res) => {
+const getAll = async (req, res) => {
     try {
         const response = await productService.getAllProducts(req.body);
         return res.status(StatusCodes.OK).json({
