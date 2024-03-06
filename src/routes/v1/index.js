@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { UserController, ProductController } = require("../../controllers/index.js");
+const { UserController, ProductController, CartController } = require("../../controllers/index.js");
 
 const {
   validateUserRequest,
@@ -28,19 +28,28 @@ router.patch("/users/:id", validateUserRequest, UserController.update);
 router.delete("/users/:id", UserController.destroy);
 
 
-// ----------------------------------- Forgot Password -----------------------------------
+// ----------------------------------- FORGOT PASSWORD ROUTES -----------------------------------
 
 router.post("/forgetpassword", UserController.forgetPassword);
 
 router.post("/updatepassword/:id", UserController.updatePassword);
 
 
-// ----------------------------------- Products Routes -----------------------------------
+// ----------------------------------- PRODUCT ROUTES -----------------------------------
+
 
 router.post("/products", ProductController.create);
 
 router.get("/products/:id", ProductController.get);
 
 router.get("/products/", ProductController.getAll);
+
+// ----------------------------------- CART ROUTES -----------------------------------
+
+router.post("/carts", CartController.create);
+
+router.delete("/carts/:id", CartController.destroy);
+
+router.get("/carts/:id", CartController.get);
 
 module.exports = router;
