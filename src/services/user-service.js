@@ -17,9 +17,9 @@ class UserService {
 
   async createUser(data) {
     try {
-      await this.userRepository.createUser(data);
+      const userId = await this.userRepository.createUser(data);
       const jwtToken = await this.#createJwtToken({ email: data.email });
-      return jwtToken;
+      return { userId, jwtToken };
     } catch (error) {
       console.log("Something error at service layer", error);
       throw error;
@@ -28,13 +28,12 @@ class UserService {
 
   async forgetPassword(data) {
     try {
-      console.log(data)
       const user = await this.userRepository.getUserByEmail(data.email);
       if (!user) {
         throw new AppError("No user", StatusCodes.BAD_REQUEST, "No such user exists on system!");
       }
       const verificationCode = crypto.randomInt(0, 1000000).toString().padStart(6, "0");
-
+      await this.tokenRepository.removeToken({ UserId: user.id });
       await user.createToken({ token: verificationCode });
       const mailData = {
         from: EMAIL_ID,
@@ -60,10 +59,10 @@ class UserService {
       }
       user.password = data.password;
       await user.save();
-      await this.tokenRepository.removeToken(userToken.id);
+      await this.tokenRepository.removeToken({ id: userToken.id });
       const mailData = {
         from: EMAIL_ID,
-        to: data.email,
+        to: user.email,
         subject: "Successfully updated password",
         text: `Hello ${user.fullName}, password of your account is updated successfully. \n
         If not done by you, kindly update the password ASAP`
@@ -89,13 +88,10 @@ class UserService {
         );
       }
       const jwtToken = await this.#createJwtToken({ email: user.email });
-      return jwtToken;
+      return { userId: user.id, jwtToken };
     } catch (error) {
-      if (error.name === "UnAuthenticated User") {
-        throw error;
-      }
       console.log("Something error at service layer", error);
-      throw new AppError(error.name);
+      throw error;
     }
   }
 

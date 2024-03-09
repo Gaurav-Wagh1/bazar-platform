@@ -9,11 +9,20 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      paymentId: {
+      transactionId: {
         type: Sequelize.INTEGER,
       },
       total: {
         type: Sequelize.INTEGER,
+        defaultValue: 0
+      },
+      status: {
+        type: Sequelize.ENUM,
+        values: ['Delivered', 'Booked', 'On The Way', 'Cancelled', 'InProcess'],
+        defaultValue: 'InProcess'
+      },
+      deliveryTime: {
+        type: Sequelize.DATE,
       },
       createdAt: {
         allowNull: false,

@@ -6,9 +6,9 @@ const userService = new UserService();
 const create = async (req, res) => {
   try {
     const response = await userService.createUser(req.body);
-    res.cookie('token', response.data, { httpOnly: true });
+    res.cookie('token', response.jwtToken, { httpOnly: true });
     return res.status(StatusCodes.CREATED).json({
-      data: response,
+      data: response.userId,
       success: true,
       error: {},
       message: "Successfully created user",
@@ -26,9 +26,9 @@ const create = async (req, res) => {
 const signin = async (req, res) => {
   try {
     const response = await userService.signIn(req.body);
-    res.cookie('token', response.data, { httpOnly: true });
+    res.cookie('token', response.jwtToken, { httpOnly: true });
     return res.status(StatusCodes.OK).json({
-      data: response,
+      data: response.userId,
       success: true,
       error: {},
       message: "User is authenticated",

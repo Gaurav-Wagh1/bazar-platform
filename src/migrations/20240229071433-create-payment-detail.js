@@ -16,7 +16,9 @@ module.exports = {
         type: Sequelize.STRING,
       },
       status: {
-        type: Sequelize.STRING,
+        type: Sequelize.ENUM,
+        values: ['pending', 'success', 'reject'],
+        defaultValue: 'pending'
       },
       paymentInfo: {
         type: Sequelize.STRING,

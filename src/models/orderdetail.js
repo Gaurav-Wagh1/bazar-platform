@@ -15,8 +15,19 @@ module.exports = (sequelize, DataTypes) => {
   }
   OrderDetail.init(
     {
-      paymentId: DataTypes.INTEGER,
-      total: DataTypes.INTEGER,
+      transactionId: DataTypes.INTEGER,
+      total: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0
+      },
+      status: {
+        type: DataTypes.ENUM,
+        values: ['Delivered', 'Booked', 'On The Way', 'Cancelled', 'InProcess'],
+        defaultValue: 'InProcess'
+      },
+      deliveryTime:{
+        type: DataTypes.DATE
+      }
     },
     {
       sequelize,

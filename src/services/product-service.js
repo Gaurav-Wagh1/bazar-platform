@@ -8,7 +8,7 @@ class ProductService {
         this.productRepository = new ProductRepository();
     }
 
-    async createProduct(data) {   // name, description, category, subCategory, supplierId, variety, price, quantity;
+    async createProduct(data) {   // name, description, category, subCategory, variety, price, quantity;
         try {
             const filterForProduct = { name: data.name, SupplierId:1 };
             const productResponse = await this.productRepository.findOrCreate(filterForProduct, data);

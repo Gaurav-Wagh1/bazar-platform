@@ -1,13 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
-const { UserController, ProductController, CartController } = require("../../controllers/index.js");
+const { UserController, ProductController, CartController, BookingController } = require("../../controllers/index.js");
 
 const {
   validateUserRequest,
   validateAuthenticate
 } = require("../../middlewares/user-request-middleware.js");
-const { UserRepository } = require("../../repositories/index.js");
 
 // ----------------------------------- USER ROUTES -----------------------------------
 
@@ -23,7 +22,7 @@ router.post("/users/authenticate", validateAuthenticate, UserController.authenti
 
 router.get("/users/:id", UserController.get);
 
-router.patch("/users/:id", validateUserRequest, UserController.update);
+router.patch("/users/:id", UserController.update);
 
 router.delete("/users/:id", UserController.destroy);
 
@@ -32,7 +31,7 @@ router.delete("/users/:id", UserController.destroy);
 
 router.post("/forgetpassword", UserController.forgetPassword);
 
-router.post("/updatepassword/:id", UserController.updatePassword);
+router.patch("/updatepassword/:id", UserController.updatePassword);
 
 
 // ----------------------------------- PRODUCT ROUTES -----------------------------------
@@ -51,5 +50,10 @@ router.post("/carts", CartController.create);
 router.delete("/carts/:id", CartController.destroy);
 
 router.get("/carts/:id", CartController.get);
+
+
+// ----------------------------------- PURCHASE ROUTES -----------------------------------
+
+router.post("/bookings/cart", BookingController.create);
 
 module.exports = router;

@@ -25,7 +25,7 @@ const create = async (req, res) => {
 const get = async (req, res) => {
     try {
         const response = await cartService.getCart(req.params.id);
-        return res.status(StatusCodes.CREATED).json({
+        return res.status(StatusCodes.OK).json({
             data: response,
             success: true,
             error: {},
@@ -44,7 +44,7 @@ const get = async (req, res) => {
 const destroy = async (req, res) => {
     try {
         const response = await cartService.deleteCartItem(req.params.id);
-        return res.status(StatusCodes.CREATED).json({
+        return res.status(StatusCodes.OK).json({
             data: response,
             success: true,
             error: {},

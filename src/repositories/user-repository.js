@@ -5,8 +5,8 @@ const { AppError } = require("../utils/error-classes");
 class UserRepository {
   async createUser(data) {
     try {
-      await User.create(data);
-      return true;
+      const user = await User.create(data);
+      return user.id;
     } catch (error) {
       if (error.name == "SequelizeUniqueConstraintError") {
         throw new AppError(
