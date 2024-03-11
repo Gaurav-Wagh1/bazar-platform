@@ -3,10 +3,8 @@ const router = express.Router();
 
 const { UserController, ProductController, CartController, BookingController } = require("../../controllers/index.js");
 
-const {
-  validateUserRequest,
-  validateAuthenticate
-} = require("../../middlewares/user-request-middleware.js");
+const { validateUserRequest } = require("../../middlewares/user-request-middleware.js");
+const { authenticateUser } = require("../../middlewares/authenticate-user-middleware.js");
 
 // ----------------------------------- USER ROUTES -----------------------------------
 
@@ -18,13 +16,13 @@ router.post(
   UserController.signin
 );
 
-router.post("/users/authenticate", validateAuthenticate, UserController.authenticate);
+router.post("/users/logout", authenticateUser, UserController.logout);                            // secured route;
 
-router.get("/users/:id", UserController.get);
+router.get("/users", authenticateUser, UserController.get);                                   // secured route;
 
-router.patch("/users/:id", UserController.update);
+router.patch("/users", authenticateUser, UserController.update);                              // secured route;
 
-router.delete("/users/:id", UserController.destroy);
+router.delete("/users", authenticateUser, UserController.destroy);                            // secured route;
 
 
 // ----------------------------------- FORGOT PASSWORD ROUTES -----------------------------------
@@ -37,7 +35,7 @@ router.patch("/updatepassword/:id", UserController.updatePassword);
 // ----------------------------------- PRODUCT ROUTES -----------------------------------
 
 
-router.post("/products", ProductController.create);
+router.post("/products", authenticateUser, ProductController.create);                             // secured route;
 
 router.get("/products/:id", ProductController.get);
 
@@ -45,15 +43,15 @@ router.get("/products/", ProductController.getAll);
 
 // ----------------------------------- CART ROUTES -----------------------------------
 
-router.post("/carts", CartController.create);
+router.post("/carts", authenticateUser, CartController.create);                                   // secured route;
 
-router.delete("/carts/:id", CartController.destroy);
+router.delete("/carts/:id", authenticateUser, CartController.destroy);                            // secured route;
 
-router.get("/carts/:id", CartController.get);
+router.get("/carts", authenticateUser, CartController.get);                                       // secured route;
 
 
 // ----------------------------------- PURCHASE ROUTES -----------------------------------
 
-router.post("/bookings/cart", BookingController.create);
+router.post("/bookings/cart", BookingController.create);                        // secured route;
 
 module.exports = router;

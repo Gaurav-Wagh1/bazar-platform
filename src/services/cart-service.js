@@ -9,11 +9,11 @@ class CartService {
         this.cartRepository = new CartRepository();
     }
 
-    async addToCart(data) {  // userId, productSkuId, quantity;
+    async addToCart(userId, data) {  // productSkuId, quantity;
         try {
-            await this.userService.getUser(data.userId);
+            await this.userService.getUser(userId);
             const productSKU = await this.productSKURepository.getProductSKU(data.productSkuId);
-            const cartResponse = await this.cartRepository.findOrCreate({ UserId: data.userId });
+            const cartResponse = await this.cartRepository.findOrCreate({ UserId: userId });
             const cart = cartResponse.response;
             cart.total = cart.total + (data.quantity * productSKU.price);
             await cart.save();
@@ -39,7 +39,7 @@ class CartService {
         }
     }
 
-    async deleteCartItem(cartItemId){
+    async deleteCartItem(cartItemId) {
         try {
             const cartItem = await this.cartRepository.getCartItem(cartItemId);
             const productSku = await cartItem.getProductSKU();

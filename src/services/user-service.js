@@ -18,8 +18,17 @@ class UserService {
   async createUser(data) {
     try {
       const userId = await this.userRepository.createUser(data);
-      const jwtToken = await this.#createJwtToken({ email: data.email });
-      return { userId, jwtToken };
+      const user = await this.getUser(userId);
+      const accessToken = await this.#createJwtToken({ id: user.id, email: user.email });
+      const mailDate = {
+        from: EMAIL_ID,
+        to: user.email,
+        subject: "Welcome to Bazar",
+        text: `Hello ${user.fullName}, you have successfully signed up. Thank you for choosing us. 
+        Team Bazar`
+      }
+      sendEmail(mailDate);
+      return { user, accessToken };
     } catch (error) {
       console.log("Something error at service layer", error);
       throw error;
@@ -75,11 +84,10 @@ class UserService {
     }
   }
 
-
   async signIn(data) {
     try {
-      const user = await this.userRepository.getUserByEmail(data.email);
-      const response = await bcrypt.compare(data.password, user.password);
+      const userDetails = await this.userRepository.getUserByEmail(data.email);
+      const response = await bcrypt.compare(data.password, userDetails.password);
       if (!response) {
         throw new AppError(
           "UnAuthenticated User",
@@ -87,8 +95,9 @@ class UserService {
           "Incorrect Password, User is not authenticated"
         );
       }
-      const jwtToken = await this.#createJwtToken({ email: user.email });
-      return { userId: user.id, jwtToken };
+      const user = await this.getUser(userDetails.id);
+      const accessToken = await this.#createJwtToken({ id: user.id, email: user.email });
+      return { user, accessToken };
     } catch (error) {
       console.log("Something error at service layer", error);
       throw error;
@@ -125,32 +134,9 @@ class UserService {
     }
   }
 
-  async authenticateUser(token) {
-    try {
-      await this.#validateToken(token);
-      return true;
-    } catch (error) {
-      if (error.message === "invalid signature") {
-        throw new AppError(
-          "UnAuthenticated",
-          StatusCodes.METHOD_NOT_ALLOWED,
-          "User is not authenticated to perform this action!"
-        );
-      }
-
-      console.log("Something went wrong in authentication", error);
-      throw new AppError(error.name);
-    }
-  }
-
   async #createJwtToken(data) {
     const token = jwt.sign(data, TOKEN_STRING, { expiresIn: "1d" });
     return token;
-  }
-
-  async #validateToken(token) {
-    const response = jwt.verify(token, TOKEN_STRING);
-    return response;
   }
 }
 

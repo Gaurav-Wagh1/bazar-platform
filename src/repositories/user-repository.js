@@ -26,7 +26,7 @@ class UserRepository {
         where: {
           id: userId,
         },
-        attributes: { exclude: ["password", "destroyTime"] },
+        attributes: { exclude: ["password"] },
       });
       if (!user) {
         throw new AppError(

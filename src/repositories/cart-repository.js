@@ -1,4 +1,4 @@
-const { Cart, CartItem } = require("../models/index.js");
+const { Cart, CartItem, ProductSKU, Product } = require("../models/index.js");
 
 class CartRepository {
     async findOrCreate(filter) {
@@ -17,11 +17,35 @@ class CartRepository {
         }
     }
 
-    async getCart(filter){
+    async getCart(filter) {
         try {
             const response = await Cart.findOne({
-                where:filter,
-                include:"CartItems"
+                where: filter,
+                attributes:{
+                    exclude:["createdAt", "updatedAt"]
+                },
+                // include: {
+                //     all:true,
+                //     nested:true
+                // }
+                include:{
+                    model:CartItem,
+                    attributes:{
+                        exclude:["createdAt", "updatedAt", "CartId", "ProductSKUId"]
+                    },
+                    include:{
+                        model:ProductSKU,
+                        attributes:{
+                            exclude:["id", "createdAt", "updatedAt", "quantity", "ProductId"]
+                        },
+                        include:{
+                            model:Product,
+                            attributes:{
+                                exclude:["createdAt", "updatedAt", "SubcategoryId", "SupplierId"]
+                            }
+                        }
+                    }
+                }
             });
             return response;
         } catch (error) {
@@ -30,11 +54,11 @@ class CartRepository {
         }
     }
 
-    async getCartItem(id){
+    async getCartItem(id) {
         try {
             const response = await CartItem.findOne({
-                where:{
-                    id:id
+                where: {
+                    id: id
                 }
             });
             return response;

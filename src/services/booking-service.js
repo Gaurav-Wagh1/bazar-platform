@@ -9,7 +9,7 @@ class BookingService {
         this.bookingRepository = new BookingRepository();
         this.cartRepository = new CartRepository();
     }
-    async createBooking(data) {
+    async createBooking(data) {                 // cartId
         try {
             const cart = await this.cartRepository.getCart({ id: data.cartId });
             if (!cart.total || !cart.CartItems) {

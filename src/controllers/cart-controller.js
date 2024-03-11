@@ -5,7 +5,7 @@ const cartService = new CartService();
 
 const create = async (req, res) => {
     try {
-        const response = await cartService.addToCart(req.body);
+        const response = await cartService.addToCart(req.user.id, req.body);
         return res.status(StatusCodes.CREATED).json({
             data: response,
             success: true,
@@ -24,7 +24,7 @@ const create = async (req, res) => {
 
 const get = async (req, res) => {
     try {
-        const response = await cartService.getCart(req.params.id);
+        const response = await cartService.getCart(req.user.id);
         return res.status(StatusCodes.OK).json({
             data: response,
             success: true,
