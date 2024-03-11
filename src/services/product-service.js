@@ -10,7 +10,7 @@ class ProductService {
 
     async createProduct(data) {   // name, description, category, subCategory, variety, price, quantity;
         try {
-            const filterForProduct = { name: data.name, SupplierId:1 };
+            const filterForProduct = { name: data.name, SupplierId: 1 };
             const productResponse = await this.productRepository.findOrCreate(filterForProduct, data);
             const product = productResponse.response;
 
@@ -29,15 +29,15 @@ class ProductService {
                 price: data.price
             }
             await product.createProductSKU(dataForSKU);
-            return true;
+            return await this.getProduct(product.id);
         } catch (error) {
             console.log(error);
         }
     }
 
-    async getProduct(productId){
+    async getProduct(productId) {
         try {
-            const  product = await this.productRepository.getProduct(productId);
+            const product = await this.productRepository.getProduct(productId);
             return product;
         } catch (error) {
             console.log(error);
@@ -45,9 +45,9 @@ class ProductService {
         }
     }
 
-    async getAllProducts(){
+    async getAllProducts(data) {
         try {
-            const  products = await this.productRepository.getAllProducts();
+            const products = await this.productRepository.getAllProducts();
             return products;
         } catch (error) {
             console.log(error);

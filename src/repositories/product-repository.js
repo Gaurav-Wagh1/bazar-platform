@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { Product } = require("../models/index");
+const { Product, ProductSKU } = require("../models/index");
 const { AppError } = require('../utils/error-classes');
 const { StatusCodes } = require('http-status-codes');
 
@@ -21,21 +21,41 @@ class ProductRepository {
 
     async getProduct(productId) {
         try {
-            const product = await Product.findByPk(productId);
-            if (!product) {
-                throw new AppError("No such Product", StatusCodes.BAD_REQUEST, "No such product is available");
-            }
-            const productSKUs = await product.getProductSKUs();
-            return { product, productSKUs };
+            const products = await Product.findOne({
+                where: {
+                    id: productId
+                },
+                attributes:{
+                    exclude:["createdAt", "updatedAt", "SubcategoryId", "SupplierId"]
+                },
+                include: {
+                    model: ProductSKU,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt", "ProductId", "quantity"]
+                    }
+                }
+            });
+            return products;
         } catch (error) {
             console.log(error);
             throw error;
         }
     }
 
-    async getAllProducts() {
+    async getAllProducts(filter) {
         try {
-            const products = await Product.findAll({});
+            const products = await Product.findAll({
+                where:filter,
+                attributes:{
+                    exclude:["createdAt", "updatedAt", "SubcategoryId", "SupplierId"]
+                },
+                include: {
+                    model: ProductSKU,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt", "ProductId", "quantity"]
+                    }
+                }
+            });
             return products;
         } catch (error) {
             console.log(error);

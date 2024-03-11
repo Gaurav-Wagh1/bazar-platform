@@ -18,11 +18,11 @@ router.post(
 
 router.post("/users/logout", authenticateUser, UserController.logout);                            // secured route;
 
-router.get("/users", authenticateUser, UserController.get);                                   // secured route;
+router.get("/users", authenticateUser, UserController.get);                                       // secured route;
 
-router.patch("/users", authenticateUser, UserController.update);                              // secured route;
+router.patch("/users", authenticateUser, UserController.update);                                  // secured route;
 
-router.delete("/users", authenticateUser, UserController.destroy);                            // secured route;
+router.delete("/users", authenticateUser, UserController.destroy);                                // secured route;
 
 
 // ----------------------------------- FORGOT PASSWORD ROUTES -----------------------------------
@@ -39,7 +39,7 @@ router.post("/products", authenticateUser, ProductController.create);           
 
 router.get("/products/:id", ProductController.get);
 
-router.get("/products/", ProductController.getAll);
+router.get("/products", ProductController.getAll);
 
 // ----------------------------------- CART ROUTES -----------------------------------
 

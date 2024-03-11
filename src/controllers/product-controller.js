@@ -43,7 +43,7 @@ const get = async (req, res) => {
 
 const getAll = async (req, res) => {
     try {
-        const response = await productService.getAllProducts(req.body);
+        const response = await productService.getAllProducts(req.query);
         return res.status(StatusCodes.OK).json({
             data: response,
             success: true,
