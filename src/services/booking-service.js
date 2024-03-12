@@ -1,30 +1,41 @@
 const { StatusCodes } = require("http-status-codes");
-const { BookingRepository, CartRepository } = require("../repositories/index");
-const { AppError } = require("../utils/error-classes");
-const { sendEmail } = require("../utils/send-mail");
-const { EMAIL_ID } = require("../config/server-config");
+const { BookingRepository, CartRepository, UserRepository } = require("../repositories/index.js");
+const { AppError } = require("../utils/error-classes.js");
+const { sendEmail } = require("../utils/send-mail.js");
+const { EMAIL_ID } = require("../config/server-config.js");
+const { CartItem, Product } = require("../models/index.js");
+const { makePayment } = require("./payment-service.js");
 
 class BookingService {
     constructor() {
         this.bookingRepository = new BookingRepository();
         this.cartRepository = new CartRepository();
+        this.userRepository = new UserRepository();
     }
-    async createBooking(data) {                 // cartId
+    async createBooking(userData) {
         try {
-            const cart = await this.cartRepository.getCart({ id: data.cartId });
-            if (!cart.total || !cart.CartItems) {
+            console.log(userData);
+            const user = await this.userRepository.getUser(userData.id);
+            const cart = await user.getCart({
+                include: CartItem
+            });
+            // const cart = await this.cartRepository.getCart({ id: data.cartId });
+
+            const cartItems = cart.CartItems;       //quantity, ProductSKUId
+            if (!cart.total || !cartItems) {
                 throw new AppError("Empty Cart", StatusCodes.BAD_GATEWAY, "Cart is empty!");
             }
-            const cartItems = cart.CartItems;       //quantity, ProductSKUId
 
             for (const cartItem of cartItems) {
-                const productSKU = await cartItem.getProductSKU();
+                const productSKU = await cartItem.getProductSKU({
+                    include: Product
+                });
                 if (productSKU.quantity <= 0) {
-                    throw new AppError("Not available", StatusCodes.BAD_GATEWAY, "This product is not available in the stock!");
+                    throw new AppError("Product Not available!", StatusCodes.BAD_GATEWAY, `${productSKU.Product.name} is not available in the stock!`);
                 }
 
                 if (cartItem.quantity > productSKU.quantity) {
-                    throw new AppError("Insufficient Stock", StatusCodes.OK, `Only ${productSKU.quantity} units are available!`);
+                    throw new AppError("Insufficient Stock!", StatusCodes.OK, `Only ${productSKU.quantity} units are available of ${productSKU.Product.name}!`);
                 }
             };
 
@@ -34,17 +45,24 @@ class BookingService {
             const deliveryDate = new Date(date.setDate(date.getDate() + 2));
 
             //  creating order details;
-            const orderDetail = await this.bookingRepository.createOrderDetail(
+            // const orderDetail = await this.bookingRepository.createOrderDetail(
+            //     {
+            //         total: cart.total,
+            //         UserId: cart.UserId,
+            //         deliveryTime: deliveryDate
+            //     }
+            // );
+
+            const orderDetail = await user.createOrderDetail(
                 {
                     total: cart.total,
-                    UserId: cart.UserId,
                     deliveryTime: deliveryDate
                 }
             );
 
             //  creating order items;
-            cartItems.forEach(async (cartItems) => {
-                await orderDetail.createOrderItem(
+            cartItems.forEach((cartItems) => {
+                orderDetail.createOrderItem(
                     {
                         quantity: cartItems.quantity,
                         ProductSKUId: cartItems.ProductSKUId
@@ -53,12 +71,9 @@ class BookingService {
             });
 
             // // Integration of Payment Gateway will be here;
-            const paymentGatewayResponse = {
-                amount: orderDetail.total,
-                provider: "",
-                status: "success",
-                paymentInfo: ""
-            };
+            const paymentResponse = await makePayment(orderDetail);
+
+            // await orderDetail.createPaymentDetail(paymentGatewayResponse);
 
             cartItems.forEach(async (cartItem) => {
                 const productSKU = await cartItem.getProductSKU();
@@ -66,12 +81,11 @@ class BookingService {
                 productSKU.save();
             });
 
-            await orderDetail.createPaymentDetail(paymentGatewayResponse);
-
             orderDetail.status = "Booked";
+            orderDetail.transactionId = 4567890;
             await orderDetail.save();
 
-            const user = await cart.getUser();
+            // const user = await cart.getUser();
             const mailData = {
                 from: EMAIL_ID,
                 to: user.email,
@@ -79,9 +93,8 @@ class BookingService {
                 text: `Hello ${user.fullName}, you have successfully booked the product/products form Bazar, it will be delivered at ${deliveryDate.toLocaleString()}`
             }
             sendEmail(mailData)
-            return { orderDetail, orderItems: await orderDetail.getOrderItems() };
+            return { orderDetail, orderItems: await orderDetail.getOrderItems(),paymentResponse };
         } catch (error) {
-            console.log("hello")
             // console.log(error);
             throw error;
         }

@@ -3,5 +3,6 @@ module.exports = {
   ProductService: require("./product-service"),
   SubcategoryService: require("./sub-category-service"),
   CartService: require("./cart-service"),
-  BookingService: require("./booking-service")
+  BookingService: require("./booking-service"),
+  PaymentService: require("./payment-service")
 };

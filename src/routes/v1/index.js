@@ -52,6 +52,6 @@ router.get("/carts", authenticateUser, CartController.get);                     
 
 // ----------------------------------- PURCHASE ROUTES -----------------------------------
 
-router.post("/bookings/cart", BookingController.create);                        // secured route;
+router.post("/bookings/cart",authenticateUser, BookingController.create);                        // secured route;
 
 module.exports = router;

@@ -6,9 +6,6 @@ const cookieParser = require("cookie-parser");
 const { PORT } = require("./config/server-config");
 const apiRoutes = require("./routes/index");
 
-const BookingService = require("./services/booking-service");
-const booking = new BookingService();
-
 const createServer = async () => {
   const app = express();
 
