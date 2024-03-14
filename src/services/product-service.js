@@ -59,7 +59,20 @@ class ProductService {
 
     async getAllProducts(data) {
         try {
-            const products = await this.productRepository.getAllProducts();
+            let filter = {};
+            if (data.subcategory) {
+                filter = { name: data.subcategory }
+                const products = await this.productRepository.findProductBySubCategory(filter);
+                return products;
+            }
+            if (data.name) {
+                filter = {
+                    name: {
+                        [Op.startsWith]: data.name
+                    }
+                }
+            }
+            const products = await this.productRepository.getAllProducts(filter);
             return products;
         } catch (error) {
             console.log(error);

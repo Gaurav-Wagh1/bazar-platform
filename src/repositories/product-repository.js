@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { Product, ProductSKU } = require("../models/index");
+const { Product, ProductSKU, Subcategory } = require("../models/index");
 const { AppError } = require('../utils/error-classes');
 const { StatusCodes } = require('http-status-codes');
 
@@ -25,8 +25,8 @@ class ProductRepository {
                 where: {
                     id: productId
                 },
-                attributes:{
-                    exclude:["createdAt", "updatedAt", "SubcategoryId", "SupplierId"]
+                attributes: {
+                    exclude: ["createdAt", "updatedAt", "SubcategoryId", "SupplierId"]
                 },
                 include: {
                     model: ProductSKU,
@@ -45,9 +45,9 @@ class ProductRepository {
     async getAllProducts(filter) {
         try {
             const products = await Product.findAll({
-                where:filter,
-                attributes:{
-                    exclude:["createdAt", "updatedAt", "SubcategoryId", "SupplierId"]
+                where: filter,
+                attributes: {
+                    exclude: ["createdAt", "updatedAt", "SubcategoryId", "SupplierId"]
                 },
                 include: {
                     model: ProductSKU,
@@ -57,6 +57,26 @@ class ProductRepository {
                 }
             });
             return products;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+
+    async findProductBySubCategory(filter) {
+        try {
+            const response = await Subcategory.findAll({
+                where: filter,
+                include: {
+                    model: Product,
+                    exclude: ["createdAt", "updatedAt"],
+                    include: {
+                        model: ProductSKU,
+                        exclude: ["createdAt", "updatedAt"]
+                    }
+                }
+            });
+            return response;
         } catch (error) {
             console.log(error);
             throw error;
