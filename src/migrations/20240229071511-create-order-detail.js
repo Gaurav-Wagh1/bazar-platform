@@ -10,7 +10,7 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       transactionId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
       },
       total: {
         type: Sequelize.INTEGER,

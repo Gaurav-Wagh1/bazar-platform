@@ -1,6 +1,9 @@
 const { Op } = require('sequelize');
 const SubcategoryService = require('../services/sub-category-service');
 const { ProductRepository } = require('../repositories/index');
+const uploadImageOnCloudinary = require('../utils/cloudinary-upload');
+const { AppError } = require('../utils/error-classes');
+const { StatusCodes } = require('http-status-codes');
 
 class ProductService {
     constructor() {
@@ -8,8 +11,15 @@ class ProductService {
         this.productRepository = new ProductRepository();
     }
 
-    async createProduct(data) {   // name, description, category, subCategory, variety, price, quantity;
+    async createProduct(data, imageData) {   // name, description, category, subCategory, variety, price, quantity;
         try {
+            // image upload;
+            let imageURL = "";
+            if (imageData) {
+                const localImagePath = imageData["image"][0].path;
+                imageURL = await this.#handleImageUpload(localImagePath);
+            }
+
             const filterForProduct = { name: data.name, SupplierId: 1 };
             const productResponse = await this.productRepository.findOrCreate(filterForProduct, data);
             const product = productResponse.response;
@@ -26,12 +36,14 @@ class ProductService {
             const dataForSKU = {
                 variety: data.variety,
                 quantity: data.quantity,
-                price: data.price
+                price: data.price,
+                image: imageURL
             }
             await product.createProductSKU(dataForSKU);
             return await this.getProduct(product.id);
         } catch (error) {
             console.log(error);
+            throw error;
         }
     }
 
@@ -51,6 +63,15 @@ class ProductService {
             return products;
         } catch (error) {
             console.log(error);
+            throw error;
+        }
+    }
+
+    async #handleImageUpload(localImagePath) {
+        try {
+            const imageURL = await uploadImageOnCloudinary(localImagePath);
+            return imageURL;
+        } catch (error) {
             throw error;
         }
     }

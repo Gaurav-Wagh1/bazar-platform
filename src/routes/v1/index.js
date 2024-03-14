@@ -3,8 +3,7 @@ const router = express.Router();
 
 const { UserController, ProductController, CartController, BookingController } = require("../../controllers/index.js");
 
-const { validateUserRequest } = require("../../middlewares/user-request-middleware.js");
-const { authenticateUser } = require("../../middlewares/authenticate-user-middleware.js");
+const { validateUserRequest, authenticateUser, multerUpload, validateAddProductRequest } = require("../../middlewares/index.js");
 
 // ----------------------------------- USER ROUTES -----------------------------------
 
@@ -34,8 +33,12 @@ router.patch("/updatepassword/:id", UserController.updatePassword);
 
 // ----------------------------------- PRODUCT ROUTES -----------------------------------
 
-
-router.post("/products", authenticateUser, ProductController.create);                             // secured route;
+  router.post("/products", authenticateUser, validateAddProductRequest , multerUpload.fields([                                 // secured route;
+    {
+      name: "image",
+      maxCount: 1
+    }
+  ]), ProductController.create);                            
 
 router.get("/products/:id", ProductController.get);
 
@@ -52,6 +55,7 @@ router.get("/carts", authenticateUser, CartController.get);                     
 
 // ----------------------------------- PURCHASE ROUTES -----------------------------------
 
-router.post("/bookings/cart",authenticateUser, BookingController.create);                        // secured route;
+router.post("/bookings/cart", authenticateUser, BookingController.create);                        // secured route;
+
 
 module.exports = router;

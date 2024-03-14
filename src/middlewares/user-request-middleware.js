@@ -12,6 +12,4 @@ const validateUserRequest = (req, res, next) => {
   next();
 };
 
-module.exports = {
-  validateUserRequest
-};
+module.exports = validateUserRequest;

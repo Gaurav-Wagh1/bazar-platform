@@ -14,7 +14,6 @@ class BookingService {
     }
     async createBooking(userData) {
         try {
-            console.log(userData);
             const user = await this.userRepository.getUser(userData.id);
             const cart = await user.getCart({
                 include: CartItem
@@ -82,7 +81,7 @@ class BookingService {
             });
 
             orderDetail.status = "Booked";
-            orderDetail.transactionId = 4567890;
+            orderDetail.transactionId = paymentResponse.transactionId;
             await orderDetail.save();
 
             // const user = await cart.getUser();

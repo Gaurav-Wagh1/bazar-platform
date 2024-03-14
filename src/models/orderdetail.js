@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   OrderDetail.init(
     {
-      transactionId: DataTypes.INTEGER,
+      transactionId: DataTypes.STRING,
       total: {
         type: DataTypes.INTEGER,
         defaultValue: 0
@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
         values: ['Delivered', 'Booked', 'On The Way', 'Cancelled', 'InProcess'],
         defaultValue: 'InProcess'
       },
-      deliveryTime:{
+      deliveryTime: {
         type: DataTypes.DATE
       }
     },

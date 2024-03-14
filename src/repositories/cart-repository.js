@@ -36,7 +36,7 @@ class CartRepository {
                     include:{
                         model:ProductSKU,
                         attributes:{
-                            exclude:["id", "createdAt", "updatedAt", "quantity", "ProductId"]
+                            exclude:["createdAt", "updatedAt", "quantity", "ProductId"]
                         },
                         include:{
                             model:Product,
