@@ -57,5 +57,6 @@ router.get("/carts", authenticateUser, CartController.get);                     
 
 router.post("/bookings/cart", authenticateUser, BookingController.create);                        // secured route;
 
+router.post("/bookings", authenticateUser, BookingController.createOne);
 
 module.exports = router;

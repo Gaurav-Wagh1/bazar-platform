@@ -1,5 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
-const { BookingRepository, CartRepository, UserRepository } = require("../repositories/index.js");
+const { BookingRepository, CartRepository, UserRepository, ProductSKURepository } = require("../repositories/index.js");
 const { AppError } = require("../utils/error-classes.js");
 const { sendEmail } = require("../utils/send-mail.js");
 const { EMAIL_ID } = require("../config/server-config.js");
@@ -11,6 +11,7 @@ class BookingService {
         this.bookingRepository = new BookingRepository();
         this.cartRepository = new CartRepository();
         this.userRepository = new UserRepository();
+        this.productSKURepository = new ProductSKURepository();
     }
     async createBooking(userData) {
         try {
@@ -92,9 +93,67 @@ class BookingService {
                 text: `Hello ${user.fullName}, you have successfully booked the product/products form Bazar, it will be delivered at ${deliveryDate.toLocaleString()}`
             }
             sendEmail(mailData)
-            return { orderDetail, orderItems: await orderDetail.getOrderItems(),paymentResponse };
+            return { orderDetail, orderItems: await orderDetail.getOrderItems(), paymentResponse };
         } catch (error) {
             // console.log(error);
+            throw error;
+        }
+    }
+
+    async createOne(userData, productSkuId, quantity) {
+        try {
+            const user = await this.userRepository.getUser(userData.id);
+            const productSKU = await this.productSKURepository.getProductSKU(productSkuId);
+
+            if (quantity > productSKU.quantity) {
+                throw new AppError("Bad Request!", StatusCodes.BAD_REQUEST, `Not available, Only ${productSKU.quantity} items are on sale!`)
+            }
+
+            // total price;
+            const totalCost = +productSKU.price * quantity;
+
+            // Logic for delivery time;
+            // here 2days after booking is a assumed;
+            const date = new Date();
+            const deliveryDate = new Date(date.setDate(date.getDate() + 2));
+
+            // creating order-detail
+            const orderDetail = await user.createOrderDetail(
+                {
+                    total: totalCost,
+                    deliveryTime: deliveryDate
+                }
+            );
+
+            //  creating order items;
+            orderDetail.createOrderItem(
+                {
+                    quantity: quantity,
+                    ProductSKUId: productSkuId
+                }
+            );
+
+            // // Integration of Payment Gateway will be here;
+            const paymentResponse = await makePayment(orderDetail);
+
+            productSKU.quantity -= quantity;
+            productSKU.save();
+
+            orderDetail.status = "Booked";
+            orderDetail.transactionId = paymentResponse.transactionId;
+            await orderDetail.save();
+
+            // // const user = await cart.getUser();
+            // const mailData = {
+            //     from: EMAIL_ID,
+            //     to: user.email,
+            //     subject: "Purchase Successful",
+            //     text: `Hello ${user.fullName}, you have successfully booked the product/products form Bazar, it will be delivered at ${deliveryDate.toLocaleString()}`
+            // }
+            // sendEmail(mailData)
+            return { orderDetail, orderItems: await orderDetail.getOrderItems(), paymentResponse };
+        } catch (error) {
+            console.log(error);
             throw error;
         }
     }
