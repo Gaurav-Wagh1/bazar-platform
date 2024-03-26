@@ -41,7 +41,27 @@ const createOne = async (req, res) => {
     }
 }
 
+const getAll = async(req, res) => {
+    try {
+        const response = await bookingService.getAllOrders(req.user);
+        return res.status(StatusCodes.CREATED).json({
+            data: response,
+            success: true,
+            error: {},
+            message: "Successfully fetched all the orders"
+        });;
+    } catch (error) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            data: {},
+            success: false,
+            error: error.name || error,
+            message: error.message || "Not able to fetch the orders"
+        });
+    }
+}
+
 module.exports = {
     create,
-    createOne
+    createOne,
+    getAll
 }

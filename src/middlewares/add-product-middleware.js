@@ -1,8 +1,8 @@
-const { StatusCodes } = require("http-status-codes")
+const { StatusCodes } = require("http-status-codes");
+const fs = require("fs");
 
 const validateAddProductRequest = (req, res, next) => {
     const productData = req.body;
-    // console.log(productData);
     if (
         !productData.name ||
         !productData.category ||
@@ -12,6 +12,7 @@ const validateAddProductRequest = (req, res, next) => {
         !productData.quantity ||
         !productData.price
     ) {
+        fs.unlinkSync(req.file.path);
         return res.status(StatusCodes.BAD_REQUEST).json({
             data: {},
             success: false,

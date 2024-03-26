@@ -33,12 +33,14 @@ router.patch("/updatepassword/:id", UserController.updatePassword);
 
 // ----------------------------------- PRODUCT ROUTES -----------------------------------
 
-  router.post("/products", authenticateUser, validateAddProductRequest , multerUpload.fields([                                 // secured route;
-    {
-      name: "image",
-      maxCount: 1
-    }
-  ]), ProductController.create);                            
+// router.post("/products", authenticateUser, validateAddProductRequest, multerUpload.fields([                                 // secured route;
+//   {
+//     name: "image",
+//     maxCount: 1
+//   }
+// ]), ProductController.create);                            
+
+router.post("/products", authenticateUser, multerUpload.single("image"), validateAddProductRequest, ProductController.create);
 
 router.get("/products/:id", ProductController.get);
 
@@ -58,5 +60,10 @@ router.get("/carts", authenticateUser, CartController.get);                     
 router.post("/bookings/cart", authenticateUser, BookingController.create);                        // secured route;
 
 router.post("/bookings", authenticateUser, BookingController.createOne);
+
+
+// ----------------------------------- ORDER ROUTES -----------------------------------
+
+router.get("/orders", authenticateUser, BookingController.getAll);
 
 module.exports = router;

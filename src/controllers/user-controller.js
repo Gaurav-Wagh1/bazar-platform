@@ -52,9 +52,9 @@ const signin = async (req, res) => {
 
 const update = async (req, res) => {
   try {
-    await userService.updateUser(req.user.id, req.body);
+    const updatesUserData = await userService.updateUser(req.user.id, req.body);
     return res.status(StatusCodes.OK).json({
-      data: "Successfully updated user information",
+      data: updatesUserData,
       success: true,
       error: {},
       message: "Successfully updated user",

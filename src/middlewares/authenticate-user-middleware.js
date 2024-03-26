@@ -5,7 +5,7 @@ const { TOKEN_STRING } = require("../config/server-config.js");
 
 const authenticateUser = (req, res, next) => {
     try {
-        const token = req.headers?.authorization?.replace("Bearer ", "");
+        const token = req.headers?.authorization?.replace("Bearer ", "") || req.cookies.accessToken;
         if (!token) {
             throw "";
         }

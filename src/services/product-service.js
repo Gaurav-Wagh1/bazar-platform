@@ -16,7 +16,7 @@ class ProductService {
             // image upload;
             let imageURL = "";
             if (imageData) {
-                const localImagePath = imageData["image"][0].path;
+                const localImagePath = imageData.path;
                 imageURL = await this.#handleImageUpload(localImagePath);
             }
 

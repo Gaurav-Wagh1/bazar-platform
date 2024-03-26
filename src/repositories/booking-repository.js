@@ -1,4 +1,4 @@
-const { PaymentDetail, OrderDetail, OrderItem } = require("../models/index");
+const { PaymentDetail, OrderDetail, OrderItem, ProductSKU, Product } = require("../models/index");
 
 class BookingRepository {
     async createPaymentDetail(data) {
@@ -55,6 +55,46 @@ class BookingRepository {
         } catch (error) {
             console.log(error);
             throw error;
+        }
+    }
+
+    async getAllOrders(user) {
+        try {
+            const orderDetails = await user.getOrderDetails({
+                include:[
+                    {
+                        model: OrderItem,
+                        attributes: {
+                            exclude: ["ProductSKUId", "OrderDetailId", "createdAt", "updatedAt"]
+                        },
+                        include: {
+                            model: ProductSKU,
+                            attributes: {
+                                exclude: ["ProductId", "quantity", "createdAt", "updatedAt"]
+                            },
+                            include: {
+                                model: Product,
+                                attributes: {
+                                    exclude: ["description", "SubcategoryId", "createdAt", "updatedAt", "SupplierId"]
+                                }
+                            }
+                        },
+                    },
+                    {
+                        model:PaymentDetail,
+                        attributes:{
+                            exclude:["id", "provider", "OrderDetailId"]
+                        }
+                    }
+                ],
+                attributes: {
+                    exclude: ["UserId"]
+                }
+            });
+            return orderDetails;
+        } catch (error) {
+            console.log(error);
+            return error;
         }
     }
 }

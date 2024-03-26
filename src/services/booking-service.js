@@ -157,6 +157,17 @@ class BookingService {
             throw error;
         }
     }
+
+    async getAllOrders(userData) {
+        try {
+            const user = await this.userRepository.getUser(userData.id);
+            const orderDetails = this.bookingRepository.getAllOrders(user);
+            return orderDetails;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
 }
 
 module.exports = BookingService;

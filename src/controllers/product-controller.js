@@ -5,7 +5,7 @@ const productService = new ProductService();
 
 const create = async (req, res) => {
     try {
-        const response = await productService.createProduct(req.body, req.files);
+        const response = await productService.createProduct(req.body, req.file);
         return res.status(StatusCodes.CREATED).json({
             data: response,
             success: true,

@@ -71,15 +71,8 @@ class UserRepository {
 
   async updateUser(userId, data) {
     try {
-      const user = await User.update(data, { where: { id: userId } });
-      if (!user[0]) {
-        throw new AppError(
-          "No such user exists",
-          StatusCodes.BAD_GATEWAY,
-          "No such user exists, please sign up first!"
-        );
-      }
-      return user;
+      await User.update(data, { where: { id: userId } });
+      return await this.getUser(userId);
     } catch (error) {
       console.log("Error at repository layer", error);
       if (error.name === "No such user exists") {
