@@ -75,7 +75,7 @@ class BookingRepository {
                             include: {
                                 model: Product,
                                 attributes: {
-                                    exclude: ["description", "SubcategoryId", "createdAt", "updatedAt", "SupplierId"]
+                                    exclude: ["SubcategoryId", "createdAt", "updatedAt", "SupplierId"]
                                 }
                             }
                         },

@@ -10,7 +10,8 @@ class ProductRepository {
                 where: filter,
                 defaults: {
                     name: data.name,
-                    description: data.description
+                    description: data.description,
+                    highlights: data.highlights
                 }
             });
             return { response, created };
