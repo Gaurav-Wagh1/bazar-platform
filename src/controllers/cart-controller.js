@@ -60,8 +60,28 @@ const destroy = async (req, res) => {
     }
 }
 
+const check = async (req, res) => {
+    try {
+        const response = await cartService.checkProduct(req.user, req.params.productSKUId);
+        return res.status(StatusCodes.OK).json({
+            data: response,
+            success: true,
+            error: {},
+            message: "Product is in the cart"
+        });
+    } catch (error) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            data: {},
+            success: false,
+            error: error,
+            message: "No, Product is not in the cart"
+        });
+    }
+}
+
 module.exports = {
     create,
     get,
-    destroy
+    destroy,
+    check
 }

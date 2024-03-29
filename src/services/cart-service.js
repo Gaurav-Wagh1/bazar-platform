@@ -53,6 +53,22 @@ class CartService {
             throw error;
         }
     }
+
+    async checkProduct(userData, productSKUId) {
+        try {
+            const user = await this.userService.getUser(userData.id);
+            const cart = await user.getCart();
+            const cartItems = await cart.getCartItems();
+            console.log(cartItems);
+            const items = cartItems.filter((item)=>{
+                return item.ProductSKUId == productSKUId;
+            });
+            return items.length ? items : false;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
 }
 
 module.exports = CartService;

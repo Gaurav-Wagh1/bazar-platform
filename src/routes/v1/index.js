@@ -54,6 +54,8 @@ router.delete("/carts/:id", authenticateUser, CartController.destroy);          
 
 router.get("/carts", authenticateUser, CartController.get);                                       // secured route;
 
+router.get("/carts/:productSKUId", authenticateUser, CartController.check);
+
 
 // ----------------------------------- PURCHASE ROUTES -----------------------------------
 
