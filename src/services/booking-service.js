@@ -16,6 +16,9 @@ class BookingService {
     async createBooking(userData) {
         try {
             const user = await this.userRepository.getUser(userData.id);
+            if(!user.firstName || !user.lastName || !user.address || !user.city || !user.country || !user.state || !user.postalCode || !user.phoneNumber){
+                throw new AppError("Invalid contact field", StatusCodes.BAD_GATEWAY, "All contact fields are required");
+            }
             const cart = await user.getCart({
                 include: CartItem
             });
