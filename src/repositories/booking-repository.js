@@ -61,7 +61,7 @@ class BookingRepository {
     async getAllOrders(user) {
         try {
             const orderDetails = await user.getOrderDetails({
-                include:[
+                include: [
                     {
                         model: OrderItem,
                         attributes: {
@@ -70,20 +70,20 @@ class BookingRepository {
                         include: {
                             model: ProductSKU,
                             attributes: {
-                                exclude: ["ProductId", "quantity", "createdAt", "updatedAt"]
+                                exclude: ["ProductId", "quantity", "createdAt", "updatedAt", "highlights"]
                             },
                             include: {
                                 model: Product,
                                 attributes: {
-                                    exclude: ["SubcategoryId", "createdAt", "updatedAt", "SupplierId"]
+                                    exclude: ["SubcategoryId", "createdAt", "updatedAt", "SupplierId", "highlights", "description"]
                                 }
                             }
                         },
                     },
                     {
-                        model:PaymentDetail,
-                        attributes:{
-                            exclude:["id", "provider", "OrderDetailId"]
+                        model: PaymentDetail,
+                        attributes: {
+                            exclude: ["id", "provider", "OrderDetailId"]
                         }
                     }
                 ],
@@ -96,6 +96,26 @@ class BookingRepository {
             console.log(error);
             return error;
         }
+    }
+
+    async returnOrderItems(orderDetail) {
+        return await orderDetail.getOrderItems({
+            attributes: {
+                exclude: ["ProductSKUId", "OrderDetailId", "createdAt", "updatedAt"]
+            },
+            include: {
+                model: ProductSKU,
+                attributes: {
+                    exclude: ["ProductId", "quantity", "createdAt", "updatedAt", "highlights"]
+                },
+                include: {
+                    model: Product,
+                    attributes: {
+                        exclude: ["SubcategoryId", "createdAt", "updatedAt", "SupplierId", "highlights", "description"]
+                    }
+                }
+            },
+        })
     }
 }
 

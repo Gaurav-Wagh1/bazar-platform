@@ -27,6 +27,9 @@ module.exports = (sequelize, DataTypes) => {
       },
       deliveryTime: {
         type: DataTypes.DATE
+      },
+      address: {
+        type: DataTypes.STRING
       }
     },
     {

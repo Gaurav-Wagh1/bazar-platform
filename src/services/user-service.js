@@ -68,7 +68,7 @@ class UserService {
       }
       user.password = data.password;
       await user.save();
-      await this.tokenRepository.removeToken({ id: userToken.id });
+      await this.tokenRepository.removeToken({ UserId: userToken.id });
       const mailData = {
         from: EMAIL_ID,
         to: user.email,

@@ -12,11 +12,11 @@ class TokenRepository {
         }
     }
 
-    async removeToken(tokenId) {
+    async removeToken(data) {
         try {
             await Token.destroy({
                 where: {
-                    id: tokenId
+                    id: data.UserId
                 }
             });
             return true;

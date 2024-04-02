@@ -1,6 +1,5 @@
 const express = require("express");
 const morgan = require("morgan");
-const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 
 const { PORT } = require("./config/server-config");
@@ -11,8 +10,8 @@ const createServer = async () => {
 
   app.use(morgan("combined"));
   app.use(cookieParser())
-  app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
 
   app.use("/api", apiRoutes);
 

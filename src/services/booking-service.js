@@ -56,7 +56,8 @@ class BookingService {
             const orderDetail = await user.createOrderDetail(
                 {
                     total: cart.total,
-                    deliveryTime: deliveryDate
+                    deliveryTime: deliveryDate,
+                    address: `${user.fullName}, ${user.address}, ${user.city}, ${user.state}, ${user.country}, ${user.postalCode}`
                 }
             );
 
@@ -93,7 +94,11 @@ class BookingService {
                 text: `Hello ${user.fullName}, you have successfully booked the product/products form Bazar, it will be delivered at ${deliveryDate.toLocaleString()}`
             }
             sendEmail(mailData)
-            return { orderDetail, orderItems: await orderDetail.getOrderItems(), paymentResponse };
+            return {
+                orderDetail,
+                orderItems: await this.bookingRepository.returnOrderItems(orderDetail),
+                paymentResponse
+            };
         } catch (error) {
             // console.log(error);
             throw error;
@@ -121,7 +126,8 @@ class BookingService {
             const orderDetail = await user.createOrderDetail(
                 {
                     total: totalCost,
-                    deliveryTime: deliveryDate
+                    deliveryTime: deliveryDate,
+                    address: `${user.fullName}, ${user.address}, ${user.city}, ${user.state}, ${user.country}, ${user.postalCode}`
                 }
             );
 
@@ -143,14 +149,13 @@ class BookingService {
             orderDetail.transactionId = paymentResponse.transactionId;
             await orderDetail.save();
 
-            // // const user = await cart.getUser();
-            // const mailData = {
-            //     from: EMAIL_ID,
-            //     to: user.email,
-            //     subject: "Purchase Successful",
-            //     text: `Hello ${user.fullName}, you have successfully booked the product/products form Bazar, it will be delivered at ${deliveryDate.toLocaleString()}`
-            // }
-            // sendEmail(mailData)
+            const mailData = {
+                from: EMAIL_ID,
+                to: user.email,
+                subject: "Purchase Successful",
+                text: `Hello ${user.fullName}, you have successfully booked the product/products form Bazar, it will be delivered at ${deliveryDate.toLocaleString()}`
+            }
+            sendEmail(mailData)
             return { orderDetail, orderItems: await orderDetail.getOrderItems(), paymentResponse };
         } catch (error) {
             console.log(error);
