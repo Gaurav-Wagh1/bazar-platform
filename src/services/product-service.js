@@ -59,21 +59,23 @@ class ProductService {
 
     async getAllProducts(data) {
         try {
-            let filter = {};
             if (data.subcategory) {
-                filter = { name: data.subcategory }
-                const products = await this.productRepository.findProductBySubCategory(filter);
-                return products;
+                const productName = data.name ? data.name : "";
+                const filterForName = productName ? { name: { [Op.like]: `%${productName}%` } } : {};
+                const filterForSubcategory = { name: data.subcategory }
+                const products = await this.productRepository.findProductBySubCategory(filterForSubcategory, filterForName);
+                return products[0]?.Products ? products[0].Products : [] ;
             }
             if (data.name) {
-                filter = {
+                console.log(2);
+                const filter = {
                     name: {
-                        [Op.startsWith]: data.name
+                        [Op.like]: `%${data.name}%`
                     }
                 }
+                const products = await this.productRepository.getAllProducts(filter);
+                return products;
             }
-            const products = await this.productRepository.getAllProducts(filter);
-            return products;
         } catch (error) {
             console.log(error);
             throw error;

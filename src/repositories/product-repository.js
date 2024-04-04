@@ -48,12 +48,12 @@ class ProductRepository {
             const products = await Product.findAll({
                 where: filter,
                 attributes: {
-                    exclude: ["createdAt", "updatedAt", "SubcategoryId", "SupplierId"]
+                    exclude: ["createdAt", "updatedAt", "SubcategoryId", "SupplierId", "description", "highlights"]
                 },
                 include: {
                     model: ProductSKU,
                     attributes: {
-                        exclude: ["createdAt", "updatedAt", "ProductId", "quantity"]
+                        exclude: ["createdAt", "updatedAt", "ProductId", "quantity", "highlights"]
                     }
                 }
             });
@@ -64,17 +64,25 @@ class ProductRepository {
         }
     }
 
-    async findProductBySubCategory(filter) {
+    async findProductBySubCategory(filterForSubcategory, filterForName) {
         try {
             const response = await Subcategory.findAll({
-                where: filter,
+                where: filterForSubcategory,
                 include: {
                     model: Product,
-                    exclude: ["createdAt", "updatedAt"],
+                    where: filterForName,
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt", "description", "highlights", "createdAt", "updatedAt", "SubcategoryId", "SupplierId"],
+                    },
                     include: {
                         model: ProductSKU,
-                        exclude: ["createdAt", "updatedAt"]
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt", "ProductId", "quantity", "highlights"]
+                        }
                     }
+                },
+                attributes: {
+                    exclude: ["createdAt", "updatedAt", "description", "CategoryId"]
                 }
             });
             return response;
