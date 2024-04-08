@@ -43,7 +43,7 @@ class ProductRepository {
         }
     }
 
-    async getAllProducts(filter) {
+    async getAllProducts(filter, priceFilter) {
         try {
             const products = await Product.findAll({
                 where: filter,
@@ -52,6 +52,7 @@ class ProductRepository {
                 },
                 include: {
                     model: ProductSKU,
+                    where:priceFilter,
                     attributes: {
                         exclude: ["createdAt", "updatedAt", "ProductId", "quantity", "highlights"]
                     }
@@ -64,7 +65,7 @@ class ProductRepository {
         }
     }
 
-    async findProductBySubCategory(filterForSubcategory, filterForName) {
+    async findProductBySubCategory(filterForSubcategory, filterForName, priceFilter) {
         try {
             const response = await Subcategory.findAll({
                 where: filterForSubcategory,
@@ -76,6 +77,7 @@ class ProductRepository {
                     },
                     include: {
                         model: ProductSKU,
+                        where:priceFilter,
                         attributes: {
                             exclude: ["createdAt", "updatedAt", "ProductId", "quantity", "highlights"]
                         }

@@ -37,6 +37,7 @@ class ProductService {
                 variety: data.variety,
                 quantity: data.quantity,
                 price: data.price,
+                highlights: data.productSKUHighlight,
                 image: imageURL
             }
             await product.createProductSKU(dataForSKU);
@@ -57,23 +58,48 @@ class ProductService {
         }
     }
 
-    async getAllProducts(data) {
+    async getAllProducts(data) {        // subcategory, name, price;
         try {
+            let filterArray = [];
+            if (data.price) {
+                const priceArr = data.price.split(",");
+                for (let i = 0; i < priceArr.length; i += 2) {
+                    const minimumAmount = +priceArr[i]?.trim();
+                    const maximumAmount = +priceArr[i + 1]?.trim();
+                    if (!maximumAmount) {
+                        filterArray.push({ price: { [Op.gte]: minimumAmount } })
+                    }
+                    else {
+                        filterArray.push({ price: { [Op.between]: [minimumAmount, maximumAmount] } })
+                    }
+                }
+            }
+
+            const priceFilter = {};
+            Object.keys(filterArray).length ? Object.assign(priceFilter, { [Op.or]: filterArray }) : Object.assign(priceFilter, {});
+
             if (data.subcategory) {
-                const productName = data.name ? data.name : "";
-                const filterForName = productName ? { name: { [Op.like]: `%${productName}%` } } : {};
-                const filterForSubcategory = { name: data.subcategory }
-                const products = await this.productRepository.findProductBySubCategory(filterForSubcategory, filterForName);
-                return products[0]?.Products ? products[0].Products : [] ;
+                const productName = data.name ? data.name.split(",") : [];      // ["realme", "apple"]
+
+                const filterForName = {};
+                const arrForQuery = productName.map((name) => {
+                    return { name: { [Op.like]: `%${name}%` } }
+                });
+                if (arrForQuery.length) {
+                    Object.assign(filterForName, { [Op.or]: arrForQuery })
+                };
+
+                const filterForSubcategory = { name: data.subcategory };
+                const products = await this.productRepository.findProductBySubCategory(filterForSubcategory, filterForName, priceFilter);
+                return products[0]?.Products ? products[0].Products : [];
             }
             if (data.name) {
-                console.log(2);
                 const filter = {
                     name: {
                         [Op.like]: `%${data.name}%`
                     }
                 }
-                const products = await this.productRepository.getAllProducts(filter);
+                const products = await this.productRepository.getAllProducts(filter, priceFilter);
                 return products;
             }
         } catch (error) {
