@@ -4,6 +4,7 @@ const cookieParser = require("cookie-parser");
 
 const { PORT } = require("./config/server-config");
 const apiRoutes = require("./routes/index");
+const { cronJob } = require("./utils/cron");
 
 const createServer = async () => {
   const app = express();
@@ -16,6 +17,7 @@ const createServer = async () => {
   app.use("/api", apiRoutes);
 
   app.listen(PORT, async () => {
+    cronJob();
     console.log(`Server started at port ${PORT}`);
   });
 };

@@ -1,3 +1,5 @@
+const { Op } = require("sequelize");
+
 const { PaymentDetail, OrderDetail, OrderItem, ProductSKU, Product } = require("../models/index");
 
 class BookingRepository {
@@ -33,6 +35,29 @@ class BookingRepository {
         try {
             const response = await OrderDetail.findByPk(orderId);
             return response;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+
+    // this method will find all the entries where status is booked and delivery time is elapse;
+    // it will mark it as delivered;
+    async getBookedOrderDetailsAndUpdateStatus() {
+        try {
+            const response = await OrderDetail.findAll({
+                where: {
+                    status: {
+                        [Op.like]: "Booked"
+                    },
+                    deliveryTime: {
+                        [Op.lte]: new Date()
+                    }
+                }
+            });
+            response.forEach((element) => {
+                OrderDetail.update({ status: "Delivered" }, { where: { id: element.id } })
+            });
         } catch (error) {
             console.log(error);
             throw error;
