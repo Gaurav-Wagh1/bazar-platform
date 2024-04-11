@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { Product, ProductSKU, Subcategory } = require("../models/index");
+const { Product, ProductSKU, Subcategory, Sequelize, sequelize } = require("../models/index");
 const { AppError } = require('../utils/error-classes');
 const { StatusCodes } = require('http-status-codes');
 
@@ -52,7 +52,7 @@ class ProductRepository {
                 },
                 include: {
                     model: ProductSKU,
-                    where:priceFilter,
+                    where: priceFilter,
                     attributes: {
                         exclude: ["createdAt", "updatedAt", "ProductId", "quantity", "highlights"]
                     }
@@ -77,7 +77,7 @@ class ProductRepository {
                     },
                     include: {
                         model: ProductSKU,
-                        where:priceFilter,
+                        where: priceFilter,
                         attributes: {
                             exclude: ["createdAt", "updatedAt", "ProductId", "quantity", "highlights"]
                         }
@@ -88,6 +88,19 @@ class ProductRepository {
                 }
             });
             return response;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+
+    async findBrandNamesForFilter(subCategoryId) {
+        try {
+            const distinctBrands = await sequelize.query(
+                `SELECT DISTINCT SUBSTRING_INDEX(name, " ", 1) AS brand FROM ${`Products`} AS ${`Product`} where SubcategoryId = ${subCategoryId}`,
+                { type: Sequelize.QueryTypes.SELECT }
+              );
+            return distinctBrands.map(item => item.brand);
         } catch (error) {
             console.log(error);
             throw error;

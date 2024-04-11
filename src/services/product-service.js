@@ -1,6 +1,6 @@
 const { Op } = require('sequelize');
 const SubcategoryService = require('../services/sub-category-service');
-const { ProductRepository } = require('../repositories/index');
+const { ProductRepository, SubCategoryRepository } = require('../repositories/index');
 const uploadImageOnCloudinary = require('../utils/cloudinary-upload');
 const { AppError } = require('../utils/error-classes');
 const { StatusCodes } = require('http-status-codes');
@@ -9,6 +9,7 @@ class ProductService {
     constructor() {
         this.subCategoryService = new SubcategoryService();
         this.productRepository = new ProductRepository();
+        this.subCategoryRepository = new SubCategoryRepository();
     }
 
     async createProduct(data, imageData) {   // name, description, category, subCategory, variety, price, quantity;
@@ -91,16 +92,34 @@ class ProductService {
 
                 const filterForSubcategory = { name: data.subcategory };
                 const products = await this.productRepository.findProductBySubCategory(filterForSubcategory, filterForName, priceFilter);
-                return products[0]?.Products ? products[0].Products : [];
+
+                const subCategory = await this.subCategoryRepository.getSubcategoryByName(data.subcategory);
+                let brandsArr = await this.productRepository.findBrandNamesForFilter(subCategory.id);
+                brandsArr = brandsArr.map(element => element.toLowerCase());
+                return { products: products[0]?.Products ? products[0].Products : [], brandsForFilter: brandsArr, activeFilter: productName.filter(name => brandsArr.includes(name)) };
             }
             if (data.name) {
-                const filter = {
-                    name: {
-                        [Op.like]: `%${data.name}%`
+                const nameArr = data.name.trim().split(",");
+                const arrayForFilter = [];
+                nameArr.forEach(name => {
+                    arrayForFilter.push(
+                        {
+                            name: {
+                                [Op.like]: `%${name}%`
+                            }
+                        }
+                    );
+                });
+                const nameFilter = {};
+                Object.keys(arrayForFilter).length ? Object.assign(nameFilter, { [Op.or]: arrayForFilter }) : Object.assign(nameFilter, {});
+                const products = await this.productRepository.getAllProducts(nameFilter, priceFilter);
+                const brandsArr = [];
+                products.forEach(product => {
+                    if (!brandsArr.includes(product.name.substring(0, product.name.indexOf(" ")))) {
+                        brandsArr.push(product.name.substring(0, product.name.indexOf(" ")));
                     }
-                }
-                const products = await this.productRepository.getAllProducts(filter, priceFilter);
-                return products;
+                })
+                return { products, activeFilter: brandsArr.map(brand => brand.toLowerCase()), brandsForFilter:brandsArr.map(brand => brand.toLowerCase()) };
             }
         } catch (error) {
             console.log(error);

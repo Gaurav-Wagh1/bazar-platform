@@ -14,6 +14,20 @@ class SubCategoryRepository {
             console.log(error);
         }
     }
+
+    async getSubcategoryByName(subcategoryName) {
+        try {
+            const response = await Subcategory.findOne({
+                where: {
+                    name : subcategoryName
+                }
+            });
+            return response;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
 }
 
 module.exports = SubCategoryRepository;
