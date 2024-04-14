@@ -16,7 +16,7 @@ class BookingService {
     async createBooking(userData) {
         try {
             const user = await this.userRepository.getUser(userData.id);
-            if(!user.firstName || !user.lastName || !user.address || !user.city || !user.country || !user.state || !user.postalCode || !user.phoneNumber){
+            if (!user.firstName || !user.lastName || !user.address || !user.city || !user.country || !user.state || !user.postalCode || !user.phoneNumber) {
                 throw new AppError("Invalid contact field", StatusCodes.BAD_GATEWAY, "All contact fields are required");
             }
             const cart = await user.getCart({
@@ -97,11 +97,7 @@ class BookingService {
                 text: `Hello ${user.fullName}, you have successfully booked the product/products form Bazar, it will be delivered at ${deliveryDate.toLocaleString()}`
             }
             sendEmail(mailData)
-            return {
-                orderDetail,
-                orderItems: await this.bookingRepository.returnOrderItems(orderDetail),
-                paymentResponse
-            };
+            return { orderDetail };
         } catch (error) {
             // console.log(error);
             throw error;
@@ -111,6 +107,9 @@ class BookingService {
     async createOne(userData, productSkuId, quantity) {
         try {
             const user = await this.userRepository.getUser(userData.id);
+            if (!user.firstName || !user.lastName || !user.address || !user.city || !user.country || !user.state || !user.postalCode || !user.phoneNumber) {
+                throw new AppError("Invalid contact field", StatusCodes.BAD_GATEWAY, "All contact fields are required");
+            }
             const productSKU = await this.productSKURepository.getProductSKU(productSkuId);
 
             if (quantity > productSKU.quantity) {
@@ -159,7 +158,17 @@ class BookingService {
                 text: `Hello ${user.fullName}, you have successfully booked the product/products form Bazar, it will be delivered at ${deliveryDate.toLocaleString()}`
             }
             sendEmail(mailData)
-            return { orderDetail, orderItems: await orderDetail.getOrderItems(), paymentResponse };
+            return { orderDetail };
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+
+    async getOrder(orderId) {
+        try {
+            const orderDetail = await this.bookingRepository.getOrderDetailById(orderId);
+            return orderDetail;
         } catch (error) {
             console.log(error);
             throw error;

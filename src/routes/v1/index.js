@@ -66,6 +66,8 @@ router.post("/bookings", authenticateUser, BookingController.createOne);
 
 // ----------------------------------- ORDER ROUTES -----------------------------------
 
-router.get("/orders", authenticateUser, BookingController.getAll);
+router.get("/orders/:orderId", authenticateUser, BookingController.get); 
+
+router.get("/orders", authenticateUser, BookingController.getAll); 
 
 module.exports = router;

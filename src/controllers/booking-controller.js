@@ -41,10 +41,29 @@ const createOne = async (req, res) => {
     }
 }
 
-const getAll = async(req, res) => {
+const get = async (req, res) => {
+    try {
+        const response = await bookingService.getOrder(req.params.orderId);
+        return res.status(StatusCodes.OK).json({
+            data: response,
+            success: true,
+            error: {},
+            message: "Successfully fetched the order details"
+        });;
+    } catch (error) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            data: {},
+            success: false,
+            error: error.name || error,
+            message: error.message || "Not able to fetch the order details"
+        });
+    }
+}
+
+const getAll = async (req, res) => {
     try {
         const response = await bookingService.getAllOrders(req.user);
-        return res.status(StatusCodes.CREATED).json({
+        return res.status(StatusCodes.OK).json({
             data: response,
             success: true,
             error: {},
@@ -63,5 +82,6 @@ const getAll = async(req, res) => {
 module.exports = {
     create,
     createOne,
+    get,
     getAll
 }

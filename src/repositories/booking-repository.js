@@ -12,6 +12,7 @@ class BookingRepository {
             throw error;
         }
     }
+
     async getPaymentDetail(paymentId) {
         try {
             const response = await PaymentDetail.findByPk(paymentId);
@@ -90,33 +91,53 @@ class BookingRepository {
                     {
                         model: OrderItem,
                         attributes: {
-                            exclude: ["ProductSKUId", "OrderDetailId", "createdAt", "updatedAt"]
+                            exclude: ["ProductSKUId", "OrderDetailId", "createdAt", "updatedAt", "quantity"]
                         },
                         include: {
                             model: ProductSKU,
                             attributes: {
-                                exclude: ["ProductId", "quantity", "createdAt", "updatedAt", "highlights"]
+                                exclude: ["ProductId", "quantity", "createdAt", "updatedAt", "highlights", "id", "price"]
                             },
                             include: {
                                 model: Product,
                                 attributes: {
-                                    exclude: ["SubcategoryId", "createdAt", "updatedAt", "SupplierId", "highlights", "description"]
+                                    exclude: ["SubcategoryId", "createdAt", "updatedAt", "SupplierId", "highlights", "description", "id"]
                                 }
                             }
                         },
-                    },
-                    {
-                        model: PaymentDetail,
-                        attributes: {
-                            exclude: ["id", "provider", "OrderDetailId"]
-                        }
                     }
                 ],
+                attributes: {
+                    exclude: ["UserId", "updatedAt", "address", "total", "transactionId"]
+                }
+            });
+            return orderDetails;
+        } catch (error) {
+            console.log(error);
+            return error;
+        }
+    }
+
+    async getOrderDetailById(orderId) {
+        try {
+            const orderDetails = await OrderDetail.findOne({
+                where: {
+                    id: orderId
+                },
                 attributes: {
                     exclude: ["UserId"]
                 }
             });
-            return orderDetails;
+
+            const orderItems = await this.returnOrderItems(orderDetails);
+
+            const paymentResponse = await orderDetails.getPaymentDetail({
+                attributes:{
+                    exclude:["id", "OrderDetailId", "updatedAt", "provider"]
+                }
+            });
+
+            return { orderDetails, orderItems, paymentResponse };
         } catch (error) {
             console.log(error);
             return error;
