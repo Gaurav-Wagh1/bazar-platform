@@ -1,6 +1,6 @@
 const { Op } = require('sequelize');
 const SubcategoryService = require('../services/sub-category-service');
-const { ProductRepository, SubCategoryRepository } = require('../repositories/index');
+const { ProductRepository, SubCategoryRepository, ProductSKURepository } = require('../repositories/index');
 const uploadImageOnCloudinary = require('../utils/cloudinary-upload');
 const { AppError } = require('../utils/error-classes');
 const { StatusCodes } = require('http-status-codes');
@@ -10,6 +10,7 @@ class ProductService {
         this.subCategoryService = new SubcategoryService();
         this.productRepository = new ProductRepository();
         this.subCategoryRepository = new SubCategoryRepository();
+        this.productSKURepository = new ProductSKURepository();
     }
 
     async createProduct(data, imageData) {   // name, description, category, subCategory, variety, price, quantity;
@@ -61,6 +62,14 @@ class ProductService {
 
     async getAllProducts(data) {        // subcategory, name, price;
         try {
+            // fetching different products for slider and other components;
+            if (data.ids) {
+                const idsArr = data.ids.split(",").map(Number);
+                let filterArray = [];
+                idsArr.forEach(id => filterArray.push({ id: id }));
+                return await this.productSKURepository.getProductSKU(undefined, { [Op.or]: filterArray });
+            }
+
             let filterArray = [];
             if (data.price) {
                 const priceArr = data.price.split(",");
@@ -119,7 +128,7 @@ class ProductService {
                         brandsArr.push(product.name.substring(0, product.name.indexOf(" ")));
                     }
                 })
-                return { products, activeFilter: brandsArr.map(brand => brand.toLowerCase()), brandsForFilter:brandsArr.map(brand => brand.toLowerCase()) };
+                return { products, activeFilter: brandsArr.map(brand => brand.toLowerCase()), brandsForFilter: brandsArr.map(brand => brand.toLowerCase()) };
             }
         } catch (error) {
             console.log(error);
