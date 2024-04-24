@@ -19,7 +19,7 @@ class SubCategoryRepository {
         try {
             const response = await Subcategory.findOne({
                 where: {
-                    name : subcategoryName
+                    name: subcategoryName
                 }
             });
             return response;

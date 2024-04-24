@@ -1,6 +1,6 @@
 const { Op } = require('sequelize');
 const SubcategoryService = require('../services/sub-category-service');
-const { ProductRepository, SubCategoryRepository, ProductSKURepository } = require('../repositories/index');
+const { ProductRepository, SubCategoryRepository, ProductSKURepository, CategoryRepository } = require('../repositories/index');
 const uploadImageOnCloudinary = require('../utils/cloudinary-upload');
 const { AppError } = require('../utils/error-classes');
 const { StatusCodes } = require('http-status-codes');
@@ -11,6 +11,7 @@ class ProductService {
         this.productRepository = new ProductRepository();
         this.subCategoryRepository = new SubCategoryRepository();
         this.productSKURepository = new ProductSKURepository();
+        this.categoryRepository = new CategoryRepository();
     }
 
     async createProduct(data, imageData) {   // name, description, category, subCategory, variety, price, quantity;
@@ -62,6 +63,7 @@ class ProductService {
 
     async getAllProducts(data) {        // subcategory, name, price;
         try {
+
             // fetching different products for slider and other components;
             if (data.ids) {
                 const idsArr = data.ids.split(",").map(Number);
@@ -88,6 +90,28 @@ class ProductService {
             const priceFilter = {};
             Object.keys(filterArray).length ? Object.assign(priceFilter, { [Op.or]: filterArray }) : Object.assign(priceFilter, {});
 
+            if (data.category) {
+                let subcategoryArr = data.subcategory ? data.subcategory.split(",") : [];
+                const filterForSubcategory = {};
+                const arrForQuery = subcategoryArr.map(subCategory => {
+                    return { name: `${subCategory}` }
+                });
+                if (arrForQuery.length) {
+                    Object.assign(filterForSubcategory, { [Op.or]: arrForQuery });
+                }
+
+                const response = await this.categoryRepository.getAllProductsByCategory(data.category, priceFilter, filterForSubcategory);
+                const products = [];
+                response.Subcategories.forEach(subCategory => {
+                    subCategory.Products.forEach(product => products.push(product))
+                });
+
+                const subCategoryArray = await this.categoryRepository.getSubCategoriesForFilter(data.category);
+                let categoriesForFilter = subCategoryArray.Subcategories.map(subCategory => subCategory.name);
+                categoriesForFilter = categoriesForFilter.map(element => element.toLowerCase());
+                return { products, categoriesForFilter, activeFilter: subcategoryArr.filter(name => categoriesForFilter.includes(name)) };
+            }
+
             if (data.subcategory) {
                 const productName = data.name ? data.name.split(",") : [];      // ["realme", "apple"]
 
@@ -107,6 +131,7 @@ class ProductService {
                 brandsArr = brandsArr.map(element => element.toLowerCase());
                 return { products: products[0]?.Products ? products[0].Products : [], brandsForFilter: brandsArr, activeFilter: productName.filter(name => brandsArr.includes(name)) };
             }
+
             if (data.name) {
                 const nameArr = data.name.trim().split(",");
                 const arrayForFilter = [];
