@@ -24,7 +24,7 @@ class UserService {
         from: EMAIL_ID,
         to: user.email,
         subject: "Welcome to Bazar",
-        text: `Hello ${user.fullName}, you have successfully signed up. Thank you for choosing us. 
+        text: `Hello User, you have successfully signed up. Thank you for choosing us. 
         Team Bazar`
       }
       sendEmail(mailDate);

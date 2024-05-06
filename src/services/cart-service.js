@@ -58,6 +58,9 @@ class CartService {
         try {
             const user = await this.userService.getUser(userData.id);
             const cart = await user.getCart();
+            if(!cart){
+                return false;
+            }
             const cartItems = await cart.getCartItems();
             const items = cartItems.filter((item)=>{
                 return item.ProductSKUId == productSKUId;
