@@ -4,9 +4,10 @@
   "description": "This is an API based backend service for bazar (an e-commerce platform);",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/index.js"
+    "start": "node src/index.js",
+    "dev":"nodemon src/index.js"
   },
-  "author": "",
+  "author": "Gaurav Wagh",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -21,8 +22,14 @@
     "mysql2": "^3.9.1",
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.11",
-    "nodemon": "^3.0.3",
     "sequelize": "^6.37.1",
     "sequelize-cli": "^6.6.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Gaurav-Wagh1/bazar-platform.git"
   }
 }
