@@ -5,10 +5,11 @@
 1. <a href="#intro">Introduction</a>
 2. <a href="#features">Features</a>
 3. <a href="#tech">Technologies Used</a>
-4. <a href="#install">Installation</a>
-5. <a href="#usage">Usage</a>
-6. <a href="#doc">API Documentation</a>
-7. <a href="#related">Related repositories</a>
+4. <a href="#dbdesign">Database Design</a>
+5. <a href="#install">Installation</a>
+6. <a href="#usage">Usage</a>
+7. <a href="#doc">API Documentation</a>
+8. <a href="#related">Related repositories</a>
 
 ### <span id="intro">Introduction</span>
 This project is a MVC based monolithic backend system for an e-commerce platform. It provides APIs for managing products, users, orders, and other functionalities required for an online store.
@@ -29,6 +30,12 @@ This project is a MVC based monolithic backend system for an e-commerce platform
 - Database: MySQL
 - ORM: Sequelize, Sequelize cli
 - Authentication: JWT
+
+### <span id="dbdesign"> Database Design </span>
+
+Below is the diagram that outlines database architecture, showcasing the key tables, relationships, and data flow within the system. This design serves as a blueprint for how data is stored, linked, and accessed, ensuring efficient and organized data management. Refer to this diagram to understand the underlying structure that supports our application's functionality.
+
+![Database Design](docs/images/image.png)
 
 ### <span id="install">Installation</span>
 
